@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0F1115;
+  --color-foreground: #FFFFFF;
+}
+
+@layer base {
+  body {
+    @apply bg-[#0F1115] text-white;
+  }
+}
+
+.theme-light {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: #FFFFFF !important;
+}
+
+.theme-light img, .theme-light svg:not(.lucide), .theme-light video {
+  filter: invert(1) hue-rotate(180deg);
+}
