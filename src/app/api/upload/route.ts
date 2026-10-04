@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(req: Request) {
   try {
@@ -15,30 +19,17 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create unique filename
-    const ext = path.extname(file.name) || ".jpg";
-    const filename = `${uuidv4()}${ext}`;
-    
-    // Path to public/uploads
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    const filepath = path.join(uploadDir, filename);
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        { folder: "expense-tracker-receipts" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(buffer);
+    });
 
-    // Make sure directory exists
-    try {
-      await writeFile(filepath, buffer);
-    } catch (e: any) {
-      if (e.code === 'ENOENT') {
-        const fs = require('fs');
-        fs.mkdirSync(uploadDir, { recursive: true });
-        await writeFile(filepath, buffer);
-      } else {
-        throw e;
-      }
-    }
-
-    const fileUrl = `/uploads/${filename}`;
-    
-    return NextResponse.json({ url: fileUrl });
+    return NextResponse.json({ url: (result as any).secure_url });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });

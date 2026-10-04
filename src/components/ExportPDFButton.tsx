@@ -16,7 +16,7 @@ type Transaction = {
   description: string | null;
 };
 
-import { formatCurrency } from "@/lib/formatCurrency";
+import { formatCurrencyForPDF } from "@/lib/formatCurrency";
 
 export default function ExportPDFButton({ transactions, currency = "INR" }: { transactions: Transaction[], currency?: string }) {
   const handleExport = () => {
@@ -43,7 +43,7 @@ export default function ExportPDFButton({ transactions, currency = "INR" }: { tr
         t.title,
         t.category,
         t.type === 'income' ? 'Income' : 'Expense',
-        formatCurrency(t.amount, currency),
+        formatCurrencyForPDF(t.amount, currency),
         t.paymentMethod || "-"
       ]);
 
