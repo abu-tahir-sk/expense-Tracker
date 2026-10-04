@@ -25,7 +25,7 @@ export default function Navbar() {
         <h1 className="text-lg font-medium text-white">Dashboard</h1>
       </div>
 
-      <div className="flex items-center gap-4 relative" ref={dropdownRef}>
+      <div className="flex items-center gap-4 relative">
         <button className="relative text-gray-300 hover:text-white transition-colors">
           <Bell className="w-5 h-5" />
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#A3E635] rounded-full"></span>
