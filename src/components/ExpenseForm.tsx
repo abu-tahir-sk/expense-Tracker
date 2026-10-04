@@ -56,7 +56,8 @@ export default function ExpenseForm({
         setFormData((prev) => ({ ...prev, receiptUrl: json.url }));
         toast.success("Receipt uploaded successfully!");
       } else {
-        toast.error("Failed to upload receipt.");
+        const errorData = await res.json().catch(() => ({}));
+        toast.error(errorData.error || "Failed to upload receipt.");
       }
     } catch (error) {
       toast.error("Something went wrong during upload.");

@@ -19,19 +19,17 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        { folder: "expense-tracker-receipts" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      ).end(buffer);
+    // Convert to base64 Data URI for reliable serverless upload
+    const fileBase64 = buffer.toString("base64");
+    const fileUri = `data:${file.type};base64,${fileBase64}`;
+
+    const result = await cloudinary.uploader.upload(fileUri, {
+      folder: "expense-tracker-receipts",
     });
 
-    return NextResponse.json({ url: (result as any).secure_url });
-  } catch (error) {
+    return NextResponse.json({ url: result.secure_url });
+  } catch (error: any) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    return NextResponse.json({ error: "Upload failed: " + (error.message || JSON.stringify(error)) }, { status: 500 });
   }
 }
